@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { NewsBanner } from '../../components/NewsBanner/NewsBanner';
 import { getNews } from '../../api/apiNews';
 import { NewsList } from '../../components/NewsList/NewsList';
+import { getWaether } from '../../api/apiWeather';
 
 export const Main = () => {
   const [news, setNews] = useState([]);
@@ -17,7 +18,7 @@ export const Main = () => {
     };
     fetchNews();
   }, []);
-
+  // getWaether();
   return (
     <>
       {news.length > 0 ? <NewsBanner item={news[1]} /> : <p>Loading...</p>}
