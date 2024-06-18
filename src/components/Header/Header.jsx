@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { FormatDate } from '../../helpers/FormatDate';
 import styles from './styles.module.css';
 import { getWaether } from '../../api/apiWeather';
+import { SelectLanguage } from '../SelectLanguage/SelectLanguage';
+import { WeatherBlock } from '../WeatherBlock/WeatherBlock';
 
 export const Header = () => {
   const [toDayDate, setToDayDate] = useState('');
@@ -27,15 +29,7 @@ export const Header = () => {
               <h1 className={styles.headerTitle}>Daily News</h1>
               <p className={styles.headerDate}>{toDayDate}</p>
             </div>
-            <div className={styles.headerWeatherBlock}>
-              <img
-                className={styles.headerWeatherBlockIcon}
-                src={` https://openweathermap.org/img/wn/${temperature.weather?.[0]?.icon}@2x.png`}
-                alt="weather-icon"
-              />
-              <span>{Math.round(temperature.main?.temp) + '℃'} </span>
-              <p>{temperature.name}</p>
-            </div>
+            <WeatherBlock temperature={temperature} />
           </div>
         </div>
       </header>
