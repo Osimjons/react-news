@@ -4,18 +4,22 @@ import { getNews } from '../../api/apiNews';
 import { NewsList } from '../../components/NewsList/NewsList';
 import { SelectLanguage } from '../../components/SelectLanguage/SelectLanguage';
 import { Pagination } from '../../components/Pagination/Pagination';
+import { Skeleton } from '../../components/Skeleton/Skeleton';
 
 export const Main = () => {
   const [news, setNews] = useState([]);
   const [language, setLanguage] = useState('ru');
   const [currentPage, setCurrentPage] = useState(1);
+  const [isloading, setIsloading] = useState(true);
   const pageSize = 10;
   const totlaPages = 10;
 
   const fetchNews = async (currentPage, language) => {
     try {
+      setIsloading(true);
       const resp = await getNews(language, pageSize, currentPage);
       setNews(resp.news);
+      setIsloading(false);
     } catch (error) {
       console.log('error: ', error);
     }
@@ -39,6 +43,7 @@ export const Main = () => {
     fetchNews(currentPage, language);
   }, [language, currentPage]);
   // getWaether();
+
   return (
     <>
       <SelectLanguage currentLanguage={language} setLanguage={setLanguage} />
@@ -51,9 +56,17 @@ export const Main = () => {
         currentPage={currentPage}
       />
 
-      {news.length > 0 ? <NewsBanner item={news[1]} /> : <p>Loading...</p>}
+      {news.length > 0 && !isloading ? (
+        <NewsBanner item={news[1]} />
+      ) : (
+        <Skeleton type={'banner'} count={1} />
+      )}
 
-      <NewsList news={news} />
+      {!isloading ? (
+        <NewsList news={news} />
+      ) : (
+        <Skeleton type={'item'} count={10} />
+      )}
 
       <Pagination
         totalPages={totlaPages}
