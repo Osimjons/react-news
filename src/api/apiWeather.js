@@ -1,6 +1,7 @@
 import axios from 'axios';
-const WEATHER_API_KEY = import.meta.env.VITE_WEATHER_API_KEY;
+
 const WEATHER_BASE_URL = import.meta.env.VITE_WEATHER_BASE_URL;
+const WEATHER_API_KEY = import.meta.env.VITE_WEATHER_API_KEY;
 
 // const api = '61dc1a61284946aa730345e4647fb62d';
 const city = 'Москва';
