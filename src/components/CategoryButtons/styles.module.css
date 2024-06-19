@@ -1,0 +1,23 @@
+.btnWrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding: 15px;
+}
+.category,
+.active {
+  padding: 8px 12px;
+  background-color: #fff;
+  cursor: pointer;
+  border-radius: 3px;
+  text-wrap: nowrap;
+}
+.active {
+  background-color: #000;
+  color: #fff;
+}
+:disabled {
+  cursor: default;
+}
