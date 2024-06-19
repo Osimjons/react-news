@@ -7,6 +7,8 @@ import { SelectLanguage } from '../../components/SelectLanguage/SelectLanguage';
 import { Pagination } from '../../components/Pagination/Pagination';
 import { Skeleton } from '../../components/Skeleton/Skeleton';
 import { CategoryButtons } from '../../components/CategoryButtons/CategoryButtons';
+import { Search } from '../../components/Search/Search';
+import { useDebounce } from '../../helpers/hooks/useDebounce';
 
 export const Main = () => {
   const [news, setNews] = useState([]);
@@ -14,17 +16,20 @@ export const Main = () => {
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [language, setLanguage] = useState('ru');
   const [currentPage, setCurrentPage] = useState(1);
-  console.log('currentPage: ', currentPage);
   const [isloading, setIsloading] = useState(true);
+  const [keyword, setKeyword] = useState('');
   const pageSize = 10;
   const totlaPages = 10;
 
+  const debouncedKeyword = useDebounce(keyword, 1500);
+
   // Запрос на серевер для начальной отрисовки
-  const fetchNews = async (page_number, language, page_size) => {
+  const fetchNews = async (page_number, language, page_size, keyword) => {
     try {
       setIsloading(true);
       const resp = await getNews({
         language,
+        keyword,
         page_size,
         page_number,
         category: selectedCategory === 'All' ? null : selectedCategory,
@@ -51,8 +56,8 @@ export const Main = () => {
 
   // Запуск функции запрос на серевер для начальной отрисовки
   useEffect(() => {
-    fetchNews(currentPage, language, pageSize);
-  }, [language, currentPage, selectedCategory]);
+    fetchNews(currentPage, language, pageSize, debouncedKeyword);
+  }, [language, currentPage, selectedCategory, debouncedKeyword]);
 
   const handleNextPage = () => {
     if (currentPage < totlaPages) {
@@ -72,11 +77,13 @@ export const Main = () => {
   return (
     <>
       <SelectLanguage currentLanguage={language} setLanguage={setLanguage} />
+
       <CategoryButtons
         categories={categories}
         selectedCategory={selectedCategory}
         setSelectedCategory={setSelectedCategory}
       />
+      <Search keyword={keyword} setKeyword={setKeyword} />
       <Pagination
         totalPages={totlaPages}
         handleNextPage={handleNextPage}
