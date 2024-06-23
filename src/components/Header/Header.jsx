@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { FormatDate } from '../../helpers/FormatDate';
 import styles from './styles.module.css';
 import { getWaether } from '../../api/apiWeather';
-import { SelectLanguage } from '../SelectLanguage/SelectLanguage';
 import { WeatherBlock } from '../WeatherBlock/WeatherBlock';
 
 export const Header = () => {

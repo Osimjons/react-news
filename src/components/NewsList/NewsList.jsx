@@ -5,10 +5,10 @@ const NewsList = ({ news }) => {
   news.splice(0, 1);
   return (
     <ul className={styles.list}>
-      {news.map((item) => (
+      {news?.map((item) => (
         <NewsItem key={item.id} item={item} />
       ))}
     </ul>
   );
 };
-export const NewsListWithSkeleton = withSkeleton(NewsList, 'banner', 10);
+export const NewsListWithSkeleton = withSkeleton(NewsList, 'item', 10);
