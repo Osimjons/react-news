@@ -5,21 +5,20 @@ export const CategoryButtons = ({
   setSelectedCategory,
   selectedCategory,
 }) => {
+  const copyOfTheCategory = ['All', ...categories];
   return (
     <>
       <div className={styles.btnWrap}>
-        {categories.map((item) => (
+        {copyOfTheCategory?.map((category) => (
           <button
-            disabled={item === selectedCategory}
-            onClick={() => {
-              setSelectedCategory(item);
-            }}
+            key={category}
+            disabled={category === selectedCategory}
+            onClick={() => setSelectedCategory(category)}
             className={
-              item === selectedCategory ? styles.active : styles.category
+              category === selectedCategory ? styles.active : styles.category
             }
-            key={item}
           >
-            {item}
+            {category}
           </button>
         ))}
       </div>
