@@ -1,111 +1,75 @@
-import { useEffect, useState } from 'react';
-import { NewsBanner } from '../../components/NewsBanner/NewsBanner';
+import { useState } from 'react';
 import { getNews } from '../../api/apiNews';
 import { getСategories } from '../../api/apiNews';
-import { NewsList } from '../../components/NewsList/NewsList';
+import { NewsListWithSkeleton } from '../../components/NewsList/NewsList';
 import { SelectLanguage } from '../../components/SelectLanguage/SelectLanguage';
 import { Pagination } from '../../components/Pagination/Pagination';
-import { Skeleton } from '../../components/Skeleton/Skeleton';
 import { CategoryButtons } from '../../components/CategoryButtons/CategoryButtons';
 import { Search } from '../../components/Search/Search';
 import { useDebounce } from '../../helpers/hooks/useDebounce';
+import { NewsBannerWithSkeleton } from '../../components/NewsBanner/NewsBanner';
+import { PAGE_SIZE, TOTAL_PAGES } from '../../constants/constants';
+import { useFetch } from '../../helpers/hooks/useFetch';
+import { usePaginationNews } from '../../helpers/hooks/usePaginationNews';
 
 export const Main = () => {
-  const [news, setNews] = useState([]);
-  const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [language, setLanguage] = useState('ru');
   const [currentPage, setCurrentPage] = useState(1);
-  const [isloading, setIsloading] = useState(true);
   const [keyword, setKeyword] = useState('');
-  const pageSize = 10;
-  const totlaPages = 10;
+
+  // const
 
   const debouncedKeyword = useDebounce(keyword, 1500);
 
-  // Запрос на серевер для начальной отрисовки
-  const fetchNews = async (page_number, language, page_size, keyword) => {
-    try {
-      setIsloading(true);
-      const resp = await getNews({
-        language,
-        keyword,
-        page_size,
-        page_number,
-        category: selectedCategory === 'All' ? null : selectedCategory,
-      });
-      setNews(resp.news);
-      setIsloading(false);
-    } catch (error) {
-      console.log('error: ', error);
-    }
-  };
+  const { data, isloading } = useFetch(getNews, {
+    language,
+    keyword: debouncedKeyword,
+    page_size: PAGE_SIZE,
+    page_number: currentPage,
+    category: selectedCategory === 'All' ? null : selectedCategory,
+  });
 
-  const fetchСategories = async () => {
-    try {
-      const resp = await getСategories();
-      setCategories(['All', ...resp.categories.toSorted()]);
-    } catch (error) {
-      console.log('error: ', error);
-    }
-  };
+  const { data: dataCategories } = useFetch(getСategories);
 
-  useEffect(() => {
-    fetchСategories();
-  }, []);
-
-  // Запуск функции запрос на серевер для начальной отрисовки
-  useEffect(() => {
-    fetchNews(currentPage, language, pageSize, debouncedKeyword);
-  }, [language, currentPage, selectedCategory, debouncedKeyword]);
-
-  const handleNextPage = () => {
-    if (currentPage < totlaPages) {
-      setCurrentPage(currentPage + 1);
-    }
-  };
-  const handlePrevPage = () => {
-    if (currentPage > 1) {
-      setCurrentPage(currentPage - 1);
-    }
-  };
-
-  const handlePageClick = (pageNumber) => {
-    setCurrentPage(pageNumber);
-  };
+  const { handleNextPage, handlePrevPage, handlePageClick } = usePaginationNews(
+    currentPage,
+    setCurrentPage
+  );
 
   return (
     <>
       <SelectLanguage currentLanguage={language} setLanguage={setLanguage} />
 
-      <CategoryButtons
-        categories={categories}
-        selectedCategory={selectedCategory}
-        setSelectedCategory={setSelectedCategory}
-      />
+      {dataCategories ? (
+        <CategoryButtons
+          categories={dataCategories.categories}
+          selectedCategory={selectedCategory}
+          setSelectedCategory={setSelectedCategory}
+        />
+      ) : null}
+
       <Search keyword={keyword} setKeyword={setKeyword} />
+
+      {data && (
+        <NewsBannerWithSkeleton
+          isloading={isloading}
+          item={data && data.news && data.news[0]}
+        />
+      )}
+
       <Pagination
-        totalPages={totlaPages}
+        totalPages={TOTAL_PAGES}
         handleNextPage={handleNextPage}
         handlePrevPage={handlePrevPage}
         handlePageClick={handlePageClick}
         currentPage={currentPage}
       />
 
-      {news.length > 0 && !isloading ? (
-        <NewsBanner item={news[0]} />
-      ) : (
-        <Skeleton type={'banner'} count={1} />
-      )}
-
-      {!isloading ? (
-        <NewsList news={news} />
-      ) : (
-        <Skeleton type={'item'} count={10} />
-      )}
+      <NewsListWithSkeleton isloading={isloading} news={data && data.news} />
 
       <Pagination
-        totalPages={totlaPages}
+        totalPages={TOTAL_PAGES}
         handleNextPage={handleNextPage}
         handlePrevPage={handlePrevPage}
         handlePageClick={handlePageClick}

@@ -5,7 +5,11 @@ export const NewsItem = ({ item }) => {
     <li className={styles.item}>
       <div
         className={styles.wrapper}
-        style={{ backgroundImage: `url(${item.image})` }}
+        style={{
+          backgroundImage: `url(${
+            item.image !== 'None' ? item.image : '../favicon.svg'
+          })`,
+        }}
       ></div>
       <div className={styles.info}>
         <h3 className={styles.title}>{item.title}</h3>
