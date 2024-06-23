@@ -9,7 +9,7 @@ export const Search = ({ keyword, setKeyword }) => {
           value={keyword}
           placeholder="Введи ваш запрос..."
           onChange={(e) => {
-            setKeyword(e.currentTarget.value);
+            setKeyword(e.currentTarget.value.trim());
           }}
         />
       </div>

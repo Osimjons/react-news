@@ -1,3 +1,4 @@
+import { useFormatCategories } from '../../helpers/hooks/useFormatCategories';
 import styles from './styles.module.css';
 
 export const CategoryButtons = ({
@@ -5,11 +6,14 @@ export const CategoryButtons = ({
   setSelectedCategory,
   selectedCategory,
 }) => {
-  const copyOfTheCategory = ['All', ...categories];
+  const formattedCategories = useFormatCategories(categories);
+
+  const copyOfCategory = ['All', ...formattedCategories];
+
   return (
     <>
       <div className={styles.btnWrap}>
-        {copyOfTheCategory?.map((category) => (
+        {copyOfCategory?.map((category) => (
           <button
             key={category}
             disabled={category === selectedCategory}
