@@ -8,7 +8,12 @@ const NewsBanner = ({ item }) => {
     <div className={styles.bunner}>
       <Image image={item?.image} />
       <h3 className={styles.title}>{item.title}</h3>
-      <p>{item.description}</p>
+      <p>
+        {item.description}{' '}
+        <a href={item.url} target="_blank">
+          Читать подбробно...
+        </a>
+      </p>
       <p className={styles.extra}>
         {formatTimeAgo(item.published)} автор {item.author}
       </p>

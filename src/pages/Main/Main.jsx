@@ -13,57 +13,64 @@ import { useFetch } from '../../helpers/hooks/useFetch';
 import { usePaginationNews } from '../../helpers/hooks/usePaginationNews';
 
 export const Main = () => {
-  const [selectedCategory, setSelectedCategory] = useState('All');
-  const [language, setLanguage] = useState('ru');
-  const [currentPage, setCurrentPage] = useState(1);
-  const [keyword, setKeyword] = useState('');
+  const [filters, setFilters] = useState({
+    language: 'ru',
+    keyword: '',
+    page_size: PAGE_SIZE,
+    page_number: 1,
+    category: 'All',
+  });
+  const chengeFilters = (key, value) => {
+    setFilters((prev) => {
+      return { ...prev, [key]: value };
+    });
+  };
 
-  // const
-
-  const debouncedKeyword = useDebounce(keyword, 1500);
+  const debouncedKeyword = useDebounce(filters.keyword, 1500);
 
   const { data, isloading } = useFetch(getNews, {
-    language,
+    ...filters,
     keyword: debouncedKeyword,
-    page_size: PAGE_SIZE,
-    page_number: currentPage,
-    category: selectedCategory === 'All' ? null : selectedCategory,
   });
 
   const { data: dataCategories } = useFetch(getСategories);
 
   const { handleNextPage, handlePrevPage, handlePageClick } = usePaginationNews(
-    currentPage,
-    setCurrentPage
+    filters.page_number,
+    (page_number) => chengeFilters('page_number', page_number)
   );
-
   return (
     <>
-      <SelectLanguage currentLanguage={language} setLanguage={setLanguage} />
-
+      <SelectLanguage
+        currentLanguage={filters.language}
+        setLanguage={(language) => chengeFilters('language', language)}
+      />
       {dataCategories ? (
         <CategoryButtons
           categories={dataCategories.categories}
-          selectedCategory={selectedCategory}
-          setSelectedCategory={setSelectedCategory}
+          selectedCategory={filters.category}
+          setSelectedCategory={(category) =>
+            chengeFilters('category', category)
+          }
         />
       ) : null}
 
-      <Search keyword={keyword} setKeyword={setKeyword} />
+      <Search
+        keyword={filters.keyword}
+        setKeyword={(keyword) => chengeFilters('keyword', keyword)}
+      />
 
-      {data && (
-        <NewsBannerWithSkeleton
-          isloading={isloading}
-          item={data && data.news && data.news[0]}
-        />
-      )}
+      <NewsBannerWithSkeleton
+        isloading={isloading}
+        item={data && data.news && data.news[0]}
+      />
 
       <Pagination
         totalPages={TOTAL_PAGES}
         handleNextPage={handleNextPage}
         handlePrevPage={handlePrevPage}
         handlePageClick={handlePageClick}
-        currentPage={currentPage}
+        currentPage={filters.page_number}
       />
 
       <NewsListWithSkeleton isloading={isloading} news={data && data.news} />
@@ -73,7 +80,7 @@ export const Main = () => {
         handleNextPage={handleNextPage}
         handlePrevPage={handlePrevPage}
         handlePageClick={handlePageClick}
-        currentPage={currentPage}
+        currentPage={filters.page_number}
       />
     </>
   );
