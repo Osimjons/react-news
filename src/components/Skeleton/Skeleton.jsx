@@ -14,7 +14,9 @@ export const Skeleton = ({ count = 1, type = 'banner' }) => {
           })}
         </ul>
       ) : (
-        <li className={type === 'banner' ? styles.banner : styles.item}></li>
+        <ul className={styles.list}>
+          <li className={type === 'banner' ? styles.banner : styles.item}></li>
+        </ul>
       )}
     </>
   );
